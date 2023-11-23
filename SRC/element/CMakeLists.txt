@@ -82,4 +82,4 @@ add_subdirectory(CEqElement)
 
 add_subdirectory(IGA)
 
-
+add_subdirectory(mefi)

@@ -137,6 +137,9 @@ extern  void *OPS_FSAMMaterial(void); // K Kolozvari
 extern void *OPS_Damage2p(void);
 #endif
 
+extern void* OPS_OrthotropicRotatingAngleConcreteT2DMaterial01(void); // M. J. Nunez - UChile
+extern void* OPS_SmearedSteelDoubleLayerT2DMaterial01(void);		  // M. J. Nunez - UChile
+
 #if defined(OPSDEF_Material_FEAP)
 NDMaterial *
 TclModelBuilder_addFeapMaterial(ClientData clientData, Tcl_Interp *interp,
@@ -586,6 +589,22 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
       else 
 	return TCL_ERROR;
     }
+
+	else if (strcmp(argv[1], "OrthotropicRotatingAngleConcreteT2DMaterial01") == 0) {
+		void* theMat = OPS_OrthotropicRotatingAngleConcreteT2DMaterial01();
+		if (theMat != 0)
+			theMaterial = (NDMaterial*)theMat;
+		else
+			return TCL_ERROR;
+	}
+	
+	else if (strcmp(argv[1], "SmearedSteelDoubleLayerT2DMaterial01") == 0) {
+		void* theMat = OPS_SmearedSteelDoubleLayerT2DMaterial01();
+		if (theMat != 0)
+			theMaterial = (NDMaterial*)theMat;
+		else
+			return TCL_ERROR;
+	}
 
     // Check argv[1] for J2PlaneStrain material type
     else if ((strcmp(argv[1],"J2Plasticity") == 0)  ||
