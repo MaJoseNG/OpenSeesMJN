@@ -126,6 +126,11 @@ class SectionForceDeformation : public Material
   virtual const Vector& getThermalElong(void);
   virtual double getEnergy() const { return 0; };		//by SAJalali
 
+  //Added by Maria Jose Nunez, UChile
+  virtual double getSectionThickness(void);
+  virtual double getEcAvg(void);
+  //Added by Maria Jose Nunez, UChile
+
  protected:
   Matrix *fDefault;	// Default flexibility matrix
   Vector *sDefault;

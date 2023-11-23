@@ -69,6 +69,10 @@ class NDMaterial : public Material
 	virtual const Vector& getTempAndElong(void);
 	//Added by L.Jiang, [SIF]
 
+    //Added by Maria Jose Nunez, UChile
+    virtual double getConcreteYoungModulus(void);
+    //Added by Maria Jose Nunez, UChile 
+
     virtual const Vector &getStress(void);
     virtual const Vector &getStrain(void);
 
