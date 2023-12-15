@@ -104,9 +104,6 @@ public:
 	const Vector &getCommittedStress(void); 
 	const Vector &getCommittedStrain(void);  
 
-	// Function added for MEFI3D
-	double getConcreteYoungModulus(void);
-
 protected:
 
 private:

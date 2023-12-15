@@ -2736,8 +2736,3 @@ Vector FSAM::getInputParameters(void)
 
 	return input_par;
 }
-
-// Function that returns concrete Young's modulus - added for MEFI3D by Maria Jose Nunez, UChile
-double FSAM::getConcreteYoungModulus(void) {
-	return Ec;
-}

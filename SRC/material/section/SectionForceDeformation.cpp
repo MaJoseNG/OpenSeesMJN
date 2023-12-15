@@ -608,18 +608,3 @@ const Vector& SectionForceDeformation::getThermalElong(void)
   errRes.resize(this->getStressResultant().Size());
   return errRes;
 }
-
-// Functions for MEFI3D element, added by Maria Jose Nunez  - UChile
-double
-SectionForceDeformation::getSectionThickness(void)
-{
-    opserr << "SectionForceDeformation::getSectionThickness - should be called by MEFI3D\n";
-    return -1;
-}
-double
-SectionForceDeformation::getEcAvg(void)
-{
-    opserr << "SectionForceDeformation::getEcAvg - should be called by MEFI3D\n";
-    return -1;
-}
-// end of adding functions for MEFI3D element, Maria Jose Nunez - UChile

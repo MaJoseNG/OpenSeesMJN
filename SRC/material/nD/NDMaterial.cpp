@@ -235,15 +235,6 @@ NDMaterial::getTempAndElong()
 }
 //end of adding thermo-mechanical functions, L.Jiang [SIF]
 
-// Function for obtaining concrete Young's modulus for MEFI3D element, added by Maria Jose Nunez  - UChile
-double
-NDMaterial::getConcreteYoungModulus()
-{
-    opserr << "NDMaterial::getConcreteYoungModulus -- subclass responsibility\n";
-    return -1;
-}
-// end of adding  concrete Young's modulus function, Maria Jose Nunez - UChile
-
 Response*
 NDMaterial::setResponse (const char **argv, int argc, OPS_Stream &output)
 {
