@@ -612,13 +612,51 @@ const Matrix& OrthotropicRotatingAngleConcreteT2DMaterial01::getInitialTangent(v
 
 Response* OrthotropicRotatingAngleConcreteT2DMaterial01::setResponse(const char** argv, int argc, OPS_Stream& theOutput)
 {
-	return NDMaterial::setResponse(argv, argc, theOutput);
+	Response* theResponse = 0;
+	if (strcmp(argv[0], "getInputParameters") == 0) {
+		theOutput.tag("NdMaterialOutput");
+		theOutput.attr("matType", this->getClassType());
+		theOutput.attr("matTag", this->getTag());
+		theOutput.tag("ResponseType", "IP_1");
+		theOutput.tag("ResponseType", "IP_2");
+		theOutput.tag("ResponseType", "IP_3");
+		theOutput.tag("ResponseType", "IP_4");
+		theOutput.tag("ResponseType", "IP_5");
+		theOutput.endTag();
+
+		Vector data1(5);
+		data1.Zero();
+		theResponse = new MaterialResponse(this, 101, data1);
+	}
+	else
+		return this->NDMaterial::setResponse(argv, argc, theOutput);
+
+	return theResponse;
 }
 
 int OrthotropicRotatingAngleConcreteT2DMaterial01::getResponse(int responseID, Information& matInformation)
 {
-	return NDMaterial::getResponse(responseID, matInformation);
+	if (responseID == 101) {
+		return matInformation.setVector(this->getInputParameters());
+	}
+	else {
+		return 0;
+	}
 }
+
+// Function that returns input parameters (concrete Young's modulus) - added for MEFI3D by Maria Jose Nunez, UChile
+Vector OrthotropicRotatingAngleConcreteT2DMaterial01::getInputParameters(void)
+{
+	Vector input_par(5);
+
+	input_par.Zero();
+
+	input_par(0) = this->getTag();
+	input_par(1) = Eo;
+
+	return input_par;
+}
+
 
 int OrthotropicRotatingAngleConcreteT2DMaterial01::commitState(void)
 {
@@ -788,9 +826,4 @@ void OrthotropicRotatingAngleConcreteT2DMaterial01::calculateStressTransformatio
 	*(pTmatrixStress + 2 * N + 1) = sinTheta * cosTheta;				    //TmatrixStress[2][1]
 	*(pTmatrixStress + 2 * N + 2) = pow(cosTheta, 2) - pow(sinTheta, 2);	//TmatrixStress[2][2]
 	return;
-}
-
-// Function that returns concrete Young's modulus - added for MEFI3D by Maria Jose Nunez, UChile
-double OrthotropicRotatingAngleConcreteT2DMaterial01::getConcreteYoungModulus(void) {
-	return Eo;
 }

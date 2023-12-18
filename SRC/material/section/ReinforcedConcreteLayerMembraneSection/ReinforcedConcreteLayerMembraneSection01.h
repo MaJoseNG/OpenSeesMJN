@@ -77,9 +77,7 @@ public:
 	const Vector& getCommittedStress(void);
 
 	// Function used by MEFI3D
-	double getSectionThickness(void);										// Return the RC section thickness
 	double getRho(void);															// Return the concrete density
-	double getEcAvg(void);															// Return the average young's modulus of concrete
 
 private:
 	
@@ -88,6 +86,9 @@ private:
 	void calculateStrainPrincipalDirections01(void);								// Calculate the principal direction for the strains (11, 22, 12) using the calculateAngle01 method
 	void calculateAngle01(double cosTheta, double sinTheta, double& theta);			// Calculate the theta angle [-pi,pi] from the cos(theta) and sin(theta)
 	void calculatePoissonRatios(double e1, double e2);								// Calculate the Vecchio Poisson Ratios
+	// Function used by MEFI3D
+	double getEcAvg(void);															// Return the average young's modulus of concrete
+	Vector getInputParameters(void);												// Return input parameters
 
 	// Private attributes
 	NDMaterial** TheConcrete2DMaterial;												// Array of ND concrete materials

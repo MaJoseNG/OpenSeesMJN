@@ -71,9 +71,6 @@ public:
 	const Vector& getStress(void);
 	const Vector& getStrain(void);
 
-	// Function added for MEFI3D
-	double getConcreteYoungModulus(void);
-
 protected:
 
 private:
@@ -85,8 +82,8 @@ private:
 	void calculateStrainTransformationMatrix(double* pTmatrixStrain, double theta);			// calculate the Strain Transformation Matrix that goes from the Local Coord System to the orientation of the Principal Direction of strain
 	void calculateStressTransformationMatrix(double* pTmatrixStress, double theta);			// calculate the Stress Transformation Matrix that goes from the orientation of the Principal Direction T(-thetaPD) to the Local Coord System
 
-	// Function added for MEFI
-	//double getYoungModulus(void);
+	// Function added for MEFI3D
+	Vector getInputParameters(void);		// return input parameters
 
 	// Pointers to material arrays
 	UniaxialMaterial** theMaterial;         // pointer of the materials
@@ -109,7 +106,7 @@ private:
 	Matrix tangent_matrix;					// store the tangent matrix in the Orthotropic Concrete Layer
 	Matrix initialTangentNDM;				// store the initial tangent matrix in the Orthotropic Concrete Layer
 	Vector TMaxMinStrainRec;				// store the maximun and minimun strain recorded in the concrete layer
-	double Eo;
+	double Eo;								// store the concrete Young's modulus
 	double Gmin;							// store the minimun shear tangent in the concrete layer 
 	double damageConstant1;					// store the constant to determinate the damage factor
 	double damageConstant2;					// store the constant to determinate the damage factor

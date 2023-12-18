@@ -25,6 +25,7 @@
 #include <Parameter.h>
 #include <MaterialResponse.h>
 #include <algorithm>				/*min, max*/
+#include <DummyStream.h>
 
 using namespace std;
 
@@ -393,11 +394,6 @@ const Vector& ReinforcedConcreteLayerMembraneSection01::getCommittedStress(void)
 	return CSectionStress;
 }
 
-double ReinforcedConcreteLayerMembraneSection01::getSectionThickness(void)
-{
-	return h;
-}
-
 double ReinforcedConcreteLayerMembraneSection01::getRho(void)
 {
 	double rhoH = 0.0;
@@ -413,11 +409,32 @@ double ReinforcedConcreteLayerMembraneSection01::getRho(void)
 
 double ReinforcedConcreteLayerMembraneSection01::getEcAvg(void)
 {
+	DummyStream theDummyStream;
+
+	char aa[80] = "getInputParameters";
+	const char* argv[1];
+	argv[0] = aa;
+
 	double EcAvg = 0.0;
 
 	for (int ic = 0; ic < numberConcreteLayers; ic++) {
+		
+		Response* theResponse = TheConcrete2DMaterial[ic]->setResponse(argv, 1, theDummyStream);
+
+		if (theResponse == 0) {
+			opserr << "ReinforcedConcreteLayerMembraneSection01::ReinforcedConcreteLayerMembraneSection01 - failed to get input parameters for OrthotropicRotatingAngleConcreteT2DMaterial01 with tag: " << this->getTag() << "\n";
+			exit(-1);
+		}
+
+		// Get OrthotropicRotatingAngleConcreteT2DMaterial01 input variables
+		theResponse->getResponse();
+		Information& theInfoInput = theResponse->getInformation();
+		const Vector& InputNDMat = theInfoInput.getData();
+
 		// Get concrete young's modulus and multiplied by the thickness of each layer
-		EcAvg += (TheConcrete2DMaterial[ic]->getConcreteYoungModulus()) * t[ic];
+		EcAvg += (InputNDMat[1]) * t[ic];
+
+		delete theResponse;
 	}
 
 	EcAvg = EcAvg / h;
@@ -589,7 +606,7 @@ void ReinforcedConcreteLayerMembraneSection01::Print(OPS_Stream& s, int flag)
 {
 	s << "ReinforcedConcreteLayerMembraneSection01 tag: " << this->getTag() << endln;
 	s << "Total thickness h = " << h << endln;
-	
+
 	for (int iC = 0; iC < numberConcreteLayers; iC++) {
 		s << "Concrete layer " << iC + 1 << ", thickness t = " << t[iC] << endln;
 		TheConcrete2DMaterial[iC]->Print(s, flag);
@@ -619,7 +636,7 @@ Response* ReinforcedConcreteLayerMembraneSection01::setResponse(const char** arg
 		Vector data1(3);
 		data1.Zero();
 
-		theResponse = new MaterialResponse(this, 1,data1);
+		theResponse = new MaterialResponse(this, 1, data1);
 
 	}
 	else if (strcmp(argv[0], "panel_stress") == 0 || strcmp(argv[0], "Panel_Stress") == 0) {
@@ -634,8 +651,24 @@ Response* ReinforcedConcreteLayerMembraneSection01::setResponse(const char** arg
 		Vector data2(3);
 		data2.Zero();
 
-		theResponse = new MaterialResponse(this,2,data2);
+		theResponse = new MaterialResponse(this, 2, data2);
 
+	}
+	else if (strcmp(argv[0], "getInputParameters") == 0) {
+		s.tag("SectionOutput");
+		s.attr("secType", "ReinforcedConcreteLayerMembraneSection01");
+		s.attr("secTag", this->getTag());
+		s.tag("ResponseType", "IP_1");
+		s.tag("ResponseType", "IP_2");
+		s.tag("ResponseType", "IP_3");
+		s.tag("ResponseType", "IP_4");
+		s.tag("ResponseType", "IP_5");
+		s.endTag();
+
+		Vector data3(5);
+		data3.Zero();
+
+		theResponse = new MaterialResponse(this, 3, data3);
 	}
 	else {
 
@@ -654,9 +687,26 @@ int ReinforcedConcreteLayerMembraneSection01::getResponse(int responseID, Inform
 	else if (responseID == 2) {
 		return info.setVector(this->getCommittedStress());
 	}
+	else if (responseID == 3) {
+		return info.setVector(this->getInputParameters());
+	}
 	else {
 		return 0;
 	}
+}
+
+// Function that returns input and calculated parameters - added for MEFI3D by Maria Jose Nunez, UChile
+Vector ReinforcedConcreteLayerMembraneSection01::getInputParameters(void)
+{
+	Vector input_par(5);
+
+	input_par.Zero();
+
+	input_par(0) = this->getTag();
+	input_par(1) = h;
+	input_par(2) = this->getEcAvg();
+
+	return input_par;
 }
 
 // WARNING: The following method should be tested!

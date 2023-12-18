@@ -72,12 +72,14 @@ public:
 	const Vector& getCommittedStress(void);
 
 	// Function used by MEFI3D
-	double getSectionThickness(void);										// Return the RC section thickness
 	double getRho(void);															// Return the concrete density
-	double getEcAvg(void);															// Return the average young's modulus of RC material
-
 
 private:
+
+	// Function used by MEFI3D
+	double getEcAvg(void);															// Return the average young's modulus of RC material
+	Vector getInputParameters(void);												// Return input parameters
+
 	// Private attributes
 	NDMaterial* TheRCMaterial;														// Pointer to a nd material
 	
