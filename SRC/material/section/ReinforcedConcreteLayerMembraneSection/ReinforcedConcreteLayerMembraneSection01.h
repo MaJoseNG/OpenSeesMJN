@@ -88,7 +88,7 @@ private:
 	void calculatePoissonRatios(double e1, double e2);								// Calculate the Vecchio Poisson Ratios
 	// Function used by MEFI3D
 	double getEcAvg(void);															// Return the average young's modulus of concrete
-	Vector getInputParameters(void);												// Return input parameters
+	Vector getBendingParameters(void);												// Return input parameters
 
 	// Private attributes
 	NDMaterial** TheConcrete2DMaterial;												// Array of ND concrete materials

@@ -389,18 +389,15 @@ Response* ReinforcedConcreteLayerMembraneSection02::setResponse(const char** arg
 		theResponse = new MaterialResponse(this,2,data2);
 
 	}
-	else if (strcmp(argv[0], "getInputParameters") == 0) {
+	else if (strcmp(argv[0], "getBendingParameters") == 0) {
 		s.tag("SectionOutput");
 		s.attr("secType", "ReinforcedConcreteLayerMembraneSection02");
 		s.attr("secTag", this->getTag());
-		s.tag("ResponseType", "IP_1");
-		s.tag("ResponseType", "IP_2");
-		s.tag("ResponseType", "IP_3");
-		s.tag("ResponseType", "IP_4");
-		s.tag("ResponseType", "IP_5");
+		s.tag("ResponseType", "Eave");
+		s.tag("ResponseType", "Tave");
 		s.endTag();
 
-		Vector data3(5);
+		Vector data3(2);
 		data3.Zero();
 
 		theResponse = new MaterialResponse(this, 3, data3);
@@ -423,23 +420,22 @@ int ReinforcedConcreteLayerMembraneSection02::getResponse(int responseID, Inform
 		return info.setVector(this->getCommittedStress());
 	}
 	else if (responseID == 3) {
-		return info.setVector(this->getInputParameters());
+		return info.setVector(this->getBendingParameters());
 	}
 	else {
 		return 0;
 	}
 }
 
-// Function that returns input and calculated parameters - added for MEFI3D by Maria Jose Nunez, UChile
-Vector ReinforcedConcreteLayerMembraneSection02::getInputParameters(void)
+// Function that returns bending parameters - added for MEFI3D by Maria Jose Nunez, UChile
+Vector ReinforcedConcreteLayerMembraneSection02::getBendingParameters(void)
 {
-	Vector input_par(5);
+	Vector input_par(2);
 
 	input_par.Zero();
 
-	input_par(0) = this->getTag();
+	input_par(0) = this->getEcAvg();
 	input_par(1) = t;
-	input_par(2) = this->getEcAvg();
 
 	return input_par;
 }

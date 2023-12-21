@@ -78,7 +78,7 @@ private:
 
 	// Function used by MEFI3D
 	double getEcAvg(void);															// Return the average young's modulus of RC material
-	Vector getInputParameters(void);												// Return input parameters
+	Vector getBendingParameters(void);												// Return input parameters
 
 	// Private attributes
 	NDMaterial* TheRCMaterial;														// Pointer to a nd material
