@@ -409,7 +409,7 @@ double ReinforcedConcreteLayerMembraneSection01::getEcAvg(void)
 {
 	DummyStream theDummyStream;
 
-	char aa[80] = "getInputParameters";
+	char aa[80] = "getEc";
 	const char* argv[1];
 	argv[0] = aa;
 

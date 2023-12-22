@@ -731,18 +731,15 @@ const Matrix& OrthotropicRotatingAngleConcreteT2DMaterial01::getInitialTangent(v
 Response* OrthotropicRotatingAngleConcreteT2DMaterial01::setResponse(const char** argv, int argc, OPS_Stream& theOutput)
 {
 	Response* theResponse = 0;
-	if (strcmp(argv[0], "getInputParameters") == 0) {
+	if (strcmp(argv[0], "getEc") == 0) {
 		theOutput.tag("NdMaterialOutput");
 		theOutput.attr("matType", this->getClassType());
 		theOutput.attr("matTag", this->getTag());
-		theOutput.tag("ResponseType", "IP_1");
-		theOutput.tag("ResponseType", "IP_2");
-		theOutput.tag("ResponseType", "IP_3");
-		theOutput.tag("ResponseType", "IP_4");
-		theOutput.tag("ResponseType", "IP_5");
+		theOutput.tag("ResponseType", "MaterialTag");
+		theOutput.tag("ResponseType", "Ec");
 		theOutput.endTag();
 
-		Vector data1(5);
+		Vector data1(2);
 		data1.Zero();
 		theResponse = new MaterialResponse(this, 101, data1);
 	}
@@ -755,7 +752,7 @@ Response* OrthotropicRotatingAngleConcreteT2DMaterial01::setResponse(const char*
 int OrthotropicRotatingAngleConcreteT2DMaterial01::getResponse(int responseID, Information& matInformation)
 {
 	if (responseID == 101) {
-		return matInformation.setVector(this->getInputParameters());
+		return matInformation.setVector(this->getEc());
 	}
 	else {
 		return 0;
@@ -763,9 +760,9 @@ int OrthotropicRotatingAngleConcreteT2DMaterial01::getResponse(int responseID, I
 }
 
 // Function that returns input parameters (concrete Young's modulus) - added for MEFI3D by Maria Jose Nunez, UChile
-Vector OrthotropicRotatingAngleConcreteT2DMaterial01::getInputParameters(void)
+Vector OrthotropicRotatingAngleConcreteT2DMaterial01::getEc(void)
 {
-	Vector input_par(5);
+	Vector input_par(2);
 
 	input_par.Zero();
 
