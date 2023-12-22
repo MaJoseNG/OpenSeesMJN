@@ -432,7 +432,7 @@ TclModelBuilderSectionCommand (ClientData clientData, Tcl_Interp *interp, int ar
 	}
 	//end L.Jiang [SIF] added based on LayeredShellFiberSectionThermal section created by Yuli Huang & Xinzheng Lu ----
     
-    else if (strcmp(argv[1], "ReinforcedConcreteLayerMembraneSection01") == 0) {
+    else if ((strcmp(argv[1], "ReinforcedConcreteLayerMembraneSection01") == 0) || (strcmp(argv[1], "RCLayerMembraneSection01") == 0) || (strcmp(argv[1], "RCLMS01") == 0)) {
         void* theMat = OPS_ReinforcedConcreteLayerMembraneSection01();
         if (theMat != 0)
             theSection = (SectionForceDeformation*)theMat;
@@ -440,7 +440,7 @@ TclModelBuilderSectionCommand (ClientData clientData, Tcl_Interp *interp, int ar
             return TCL_ERROR;
     }
 
-    else if (strcmp(argv[1], "ReinforcedConcreteLayerMembraneSection02") == 0) {
+    else if ((strcmp(argv[1], "ReinforcedConcreteLayerMembraneSection02") == 0) || (strcmp(argv[1], "RCLayerMembraneSection02") == 0) || (strcmp(argv[1], "RCLMS02") == 0)) {
         void* theMat = OPS_ReinforcedConcreteLayerMembraneSection02();
         if (theMat != 0)
             theSection = (SectionForceDeformation*)theMat;

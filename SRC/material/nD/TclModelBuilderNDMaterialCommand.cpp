@@ -590,7 +590,7 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
 	return TCL_ERROR;
     }
 
-	else if (strcmp(argv[1], "OrthotropicRotatingAngleConcreteT2DMaterial01") == 0) {
+	else if ((strcmp(argv[1], "OrthotropicRotatingAngleConcreteT2DMaterial01") == 0) || (strcmp(argv[1], "OrthotropicRAConcrete") == 0)) {
 		void* theMat = OPS_OrthotropicRotatingAngleConcreteT2DMaterial01();
 		if (theMat != 0)
 			theMaterial = (NDMaterial*)theMat;
@@ -598,7 +598,7 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
 			return TCL_ERROR;
 	}
 	
-	else if (strcmp(argv[1], "SmearedSteelDoubleLayerT2DMaterial01") == 0) {
+	else if ((strcmp(argv[1], "SmearedSteelDoubleLayerT2DMaterial01") == 0) || (strcmp(argv[1], "SmearedSteelDoubleLayer") == 0)) {
 		void* theMat = OPS_SmearedSteelDoubleLayerT2DMaterial01();
 		if (theMat != 0)
 			theMaterial = (NDMaterial*)theMat;

@@ -221,14 +221,128 @@ void SmearedSteelDoubleLayerT2DMaterial01::Print(OPS_Stream& s, int flag)
 
 int SmearedSteelDoubleLayerT2DMaterial01::sendSelf(int commitTag, Channel& theChannel)
 {
-	//Pendiente
-	return -1;
+	int res = 0;
+
+	int dataTag = this->getDbTag();
+
+	static Vector data(4);
+
+	data(0) = this->getTag();
+	data(1) = ratioLayer1;
+	data(2) = ratioLayer2;
+	data(3) = thetaSmearedSteel;
+
+	res += theChannel.sendVector(dataTag, commitTag, data);
+	if (res < 0) {
+		opserr << "WARNING SmearedSteelDoubleLayerT2DMaterial01::sendSelf() - " << this->getTag() << " failed to send Vector\n";
+		return res;
+	}
+
+	int matDbTag;
+
+	static ID idData(4);
+
+	int i;
+	for (i = 0; i < 2; i++)
+	{
+		idData(i) = theMaterial[i]->getClassTag();
+		matDbTag = theMaterial[i]->getDbTag();
+		if (matDbTag == 0) {
+			matDbTag = theChannel.getDbTag();
+			if (matDbTag != 0)
+				theMaterial[i]->setDbTag(matDbTag);
+		}
+		idData(i + 2) = matDbTag;
+	}
+
+	res += theChannel.sendID(dataTag, commitTag, idData);
+	if (res < 0) {
+		opserr << "WARNING SmearedSteelDoubleLayerT2DMaterial01::sendSelf() - " << this - getTag() << " failed to send ID\n";
+		return res;
+	}
+
+	for (i = 0; i < 2; i++) {
+		res += theMaterial[i]->sendSelf(commitTag, theChannel);
+		if (res < 0) {
+			opserr << "SmearedSteelDoubleLayerT2DMaterial01::sendSelf() - " << this - getTag() << " failed to send its Material\n";
+			return res;
+		}
+	}
+
+	return res;
 }
 
 int SmearedSteelDoubleLayerT2DMaterial01::recvSelf(int commitTag, Channel& theChannel, FEM_ObjectBroker& theBroker)
 {
-	//Pendiente
-	return -1;
+	int res = 0;
+
+	int dataTag = this->getDbTag();
+
+	static Vector data(4);
+	res += theChannel.recvVector(dataTag, commitTag, data);
+	if (res < 0) {
+		opserr << "WARNING SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - failed to receive Vector\n";
+		return res;
+	}
+
+	this->setTag((int)data(0));
+	ratioLayer1       = data(1);
+	ratioLayer2       = data(2);
+	thetaSmearedSteel = data(3);
+
+	static ID idData(4);
+	res += theChannel.recvID(dataTag, commitTag, idData);
+	if (res < 0) {
+		opserr << "WARNING SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - " << this->getTag() << " failed to receive ID\n";
+		return res;
+	}
+
+	if (theMaterial == 0) {
+		theMaterial = new UniaxialMaterial * [2];
+		if (theMaterial == 0) {
+			opserr << "SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - Could not allocate Uniaxial* array\n";
+			return -1;
+		}
+		for (int i = 0; i < 2; i++) {
+			int matClassTag = idData(i);
+			int matDbTag = idData(i + 2);
+			theMaterial[i] = theBroker.getNewUniaxialMaterial(matClassTag);
+			if (theMaterial[i] == 0) {
+				opserr << "SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - Broker could not create Uniaxial of class type " << matClassTag << endln;
+				return -1;
+			}
+			theMaterial[i]->setDbTag(matDbTag);
+			res += theMaterial[i]->recvSelf(commitTag, theChannel, theBroker);
+			if (res < 0) {
+				opserr << "SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - material " << i << " failed to receive itself\n";
+				return res;
+			}
+		}
+	}
+
+	else {
+		for (int i = 0; i < 2; i++) {
+			int matClassTag = idData(i);
+			int matDbTag = idData(i + 2);
+
+			if (theMaterial[i]->getClassTag() != matClassTag) {
+				delete theMaterial[i];
+				theMaterial[i] = theBroker.getNewUniaxialMaterial(matClassTag);
+				if (theMaterial[i] == 0) {
+					opserr << "SmearedSteelDoubleLayerT2DMaterial01::recvself() - material " << i << " failed to create\n";
+					return -1;
+				}
+			}
+			theMaterial[i]->setDbTag(matDbTag);
+			res += theMaterial[i]->recvSelf(commitTag, theChannel, theBroker);
+			if (res < 0) {
+				opserr << "SmearedSteelDoubleLayerT2DMaterial01::recvSelf() - material " << i << " failed to receive itself\n";
+				return res;
+			}
+		}
+	}
+
+	return res;
 }
 
 int SmearedSteelDoubleLayerT2DMaterial01::setTrialStrain(const Vector& v)

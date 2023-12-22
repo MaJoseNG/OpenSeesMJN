@@ -402,8 +402,6 @@ double ReinforcedConcreteLayerMembraneSection01::getRho(void)
 		rhoH += (TheConcrete2DMaterial[ic]->getRho()) * t[ic];
 	}
 
-	rhoH = rhoH / h;
-
 	return rhoH;
 }
 
@@ -592,14 +590,211 @@ int ReinforcedConcreteLayerMembraneSection01::revertToStart(void)
 
 int ReinforcedConcreteLayerMembraneSection01::sendSelf(int commitTag, Channel& theChannel)
 {
-	// Pendiente
-	return -1;
+	int res = 0;
+	int dataTag = this->getDbTag();
+
+	static ID iData(5);
+	iData(0) = this->getTag();
+	iData(1) = numberReinforcedSteelLayers;
+	iData(2) = numberConcreteLayers;
+	iData(3) = ecr;
+	iData(4) = ec;
+
+	res += theChannel.sendID(dataTag, commitTag, iData);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::sendSelf() - " << this->getTag() << " failed to send ID data" << endln;
+		return res;
+	}
+
+	if (numberReinforcedSteelLayers > 0)
+	{
+		Vector vecDataRS(2 * numberReinforcedSteelLayers);
+		int counter = 0;
+		int i;
+		int matDbTag;
+		for (i = 0; i < numberReinforcedSteelLayers; i++)
+		{
+			vecDataRS(counter++) = (double)TheReinforcedSteel2DMaterial[i]->getClassTag();
+			matDbTag = TheReinforcedSteel2DMaterial[i]->getDbTag();
+			if (matDbTag == 0) {
+				matDbTag = theChannel.getDbTag();
+				if (matDbTag != 0)
+					TheReinforcedSteel2DMaterial[i]->setDbTag(matDbTag);
+			}
+			vecDataRS(counter++) = (double)matDbTag;
+		}
+
+		res += theChannel.sendVector(dataTag, commitTag, vecDataRS);
+		if (res < 0) {
+			opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::sendSelf() - " << this->getTag() << " failed to send Vector data" << endln;
+			return res;
+		}
+
+		for (i = 0; i < numberReinforcedSteelLayers; i++) {
+			res += TheReinforcedSteel2DMaterial[i]->sendSelf(commitTag, theChannel);
+			if (res < 0) {
+				opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::sendSelf() - " << this->getTag() << " failed to send its Material" << endln;
+				return res;
+			}
+		}
+	}
+
+	if (numberConcreteLayers > 0)
+	{
+		Vector vecDataC(3 * numberConcreteLayers);
+		int counter = 0;
+		int i;
+
+		for (i = 0; i < numberConcreteLayers; i++) {
+			vecDataC(counter++) = t[i];
+		}
+
+		int matDbTag;
+		for (i = 0; i < numberConcreteLayers; i++)
+		{
+			vecDataC(counter++) = (double)TheConcrete2DMaterial[i]->getClassTag();
+			matDbTag = TheConcrete2DMaterial[i]->getDbTag();
+			if (matDbTag == 0) {
+				matDbTag = theChannel.getDbTag();
+				if (matDbTag != 0)
+					TheConcrete2DMaterial[i]->setDbTag(matDbTag);
+			}
+			vecDataC(counter++) = (double)matDbTag;
+		}
+
+		res += theChannel.sendVector(dataTag, commitTag, vecDataC);
+		if (res < 0) {
+			opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::sendSelf() - " << this->getTag() << " failed to send Vector data" << endln;
+			return res;
+		}
+
+		for (i = 0; i < numberConcreteLayers; i++) {
+			res += TheConcrete2DMaterial[i]->sendSelf(commitTag, theChannel);
+			if (res < 0) {
+				opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::sendSelf() - " << this->getTag() << " failed to send its Material" << endln;
+				return res;
+			}
+		}
+	}
+
+	return res;
 }
 
 int ReinforcedConcreteLayerMembraneSection01::recvSelf(int commitTag, Channel& theChannel, FEM_ObjectBroker& theBroker)
 {
-	// Pendiente
-	return -1;
+	int res = 0;
+
+	int dataTag = this->getDbTag();
+
+	static ID iData(5);
+	res += theChannel.recvID(dataTag, commitTag, iData);
+
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::recvSelf() - " << this->getTag() << " failed to receive ID data" << endln;
+		return res;
+	}
+
+	this->setTag(iData(0));
+
+	int i;
+	if (numberReinforcedSteelLayers != iData(1));
+	{
+		numberReinforcedSteelLayers = iData(1);
+		if (TheReinforcedSteel2DMaterial != 0)
+		{
+			for (i = 0; i < numberReinforcedSteelLayers; i++)
+			{
+				if (TheReinforcedSteel2DMaterial[i] != 0) delete TheReinforcedSteel2DMaterial[i];
+			}
+			delete[] TheReinforcedSteel2DMaterial;
+		}
+		TheReinforcedSteel2DMaterial = new NDMaterial * [numberReinforcedSteelLayers];
+		for (i = 0; i < numberReinforcedSteelLayers; i++)
+			TheReinforcedSteel2DMaterial[i] = nullptr;
+	}
+
+	if (numberConcreteLayers != iData(2))
+	{
+		numberConcreteLayers = iData(2);
+		if (t != 0) delete[] t;
+		t = new double[numberConcreteLayers];
+		if (TheConcrete2DMaterial != 0)
+		{
+			for (i = 0; i < numberConcreteLayers; i++)
+			{
+				if (TheConcrete2DMaterial[i] != 0) delete TheConcrete2DMaterial[i];
+			}
+			delete[] TheConcrete2DMaterial;
+		}
+		TheConcrete2DMaterial = new NDMaterial * [numberConcreteLayers];
+		for (i = 0; i < numberConcreteLayers; i++)
+			TheConcrete2DMaterial[i] = nullptr;
+	}
+	
+	ecr                         = iData(3);
+	ec                          = iData(4);
+
+	if (numberReinforcedSteelLayers)
+	{
+		Vector vecDataRS(2 * numberReinforcedSteelLayers);
+		res += theChannel.recvVector(dataTag, commitTag, vecDataRS);
+		if (res < 0) {
+			opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::recvSelf() - " << this->getTag() << " failed to receive Vector data" << endln;
+			return res;
+		}
+		int counter = 0;
+		for (i = 0; i < numberReinforcedSteelLayers; i++) {
+			int matClassTag = (int)vecDataRS(counter++);
+			if (TheReinforcedSteel2DMaterial[i] == nullptr || TheReinforcedSteel2DMaterial[i]->getClassTag() != matClassTag) {
+				if (TheReinforcedSteel2DMaterial[i]) delete TheReinforcedSteel2DMaterial[i];
+				TheReinforcedSteel2DMaterial[i] = theBroker.getNewNDMaterial(matClassTag);
+				if (TheReinforcedSteel2DMaterial[i] == nullptr) {
+					opserr << "ReinforcedConcreteLayerMembraneSection01::recvSelf() - Broker could no create NDMaterial of class type " << matClassTag << endln;
+					return -1;
+				}
+			}
+			TheReinforcedSteel2DMaterial[i]->setDbTag((int)vecDataRS(counter++));
+			res += TheReinforcedSteel2DMaterial[i]->recvSelf(commitTag, theChannel, theBroker);
+			if (res < 0) {
+				opserr << "ReinforcedConcreteLayerMembraneSection01::recvSelf() - material " << i << " failed to recv itself" << endln;
+				return res;
+			}
+		}
+	}
+
+	if (numberConcreteLayers > 0)
+	{
+		Vector vecDataC(3 * numberConcreteLayers);
+		res += theChannel.recvVector(dataTag, commitTag, vecDataC);
+		if (res < 0) {
+			opserr << "WARNING ReinforcedConcreteLayerMembraneSection01::recvSelf() - " << this->getTag() << " failed to receive Vector data" << endln;
+			return res;
+		}
+		int counter = 0;
+		for (i = 0; i < numberConcreteLayers; i++)
+		{
+			t[i] = vecDataC[counter++];
+		}
+		for (i = 0; i < numberConcreteLayers; i++) {
+			int matClassTag = (int)vecDataC(counter++);
+			if (TheConcrete2DMaterial[i] == nullptr || TheConcrete2DMaterial[i]->getClassTag() != matClassTag) {
+				if (TheConcrete2DMaterial[i]) delete TheConcrete2DMaterial[i];
+				TheConcrete2DMaterial[i] = theBroker.getNewNDMaterial(matClassTag);
+				if (TheConcrete2DMaterial[i] == nullptr) {
+					opserr << "ReinforcedConcreteLayerMembraneSection01::recvSelf() - Broker could not create NDMaterial of class type " << matClassTag << endln;
+					return -1;
+				}
+			}
+			TheConcrete2DMaterial[i]->setDbTag((int)vecDataC(counter++));
+			res += TheConcrete2DMaterial[i]->recvSelf(commitTag, theChannel, theBroker);
+			if (res < 0) {
+				opserr << "ReinforcedConcreteLayerMembraneSection01:recvSelf() - material " << i << " failed to recv itself" << endln;
+				return res;
+			}
+		}
+	}
+
+	return res;
 }
 
 void ReinforcedConcreteLayerMembraneSection01::Print(OPS_Stream& s, int flag)

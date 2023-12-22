@@ -167,6 +167,8 @@
 #include "DoubleMembranePlateFiberSection.h"
 #include "Bidirectional.h"
 #include "LayeredShellFiberSection.h" // Yuli Huang & Xinzheng Lu 
+#include "ReinforcedConcreteLayerMembraneSection/ReinforcedConcreteLayerMembraneSection01.h" // M. J. Nunez
+#include "ReinforcedConcreteLayerMembraneSection/ReinforcedConcreteLayerMembraneSection02.h" // M. J. Nunez
 
 // NDMaterials
 #include "ElasticIsotropicPlaneStrain2D.h"
@@ -230,6 +232,8 @@
 #include "stressDensityModel/stressDensity.h"
 #include "InitStressNDMaterial.h"
 #include "ASDConcrete3DMaterial.h"
+#include "OrthotropicRotatingAngleConcreteT2DMaterial01/OrthotropicRotatingAngleConcreteT2DMaterial01.h" // M. J. Nunez
+#include "SmearedSteelDoubleLayerT2DMaterial01/SmearedSteelDoubleLayerT2DMaterial01.h"					// M. J. Nunez
 
 // Fibers
 #include "fiber/UniaxialFiber2d.h"
@@ -1685,6 +1689,12 @@ FEM_ObjectBrokerAllClasses::getNewSection(int classTag)
 	case SEC_TAG_Bidirectional:
 		return new Bidirectional();
 
+	case SEC_TAG_ReinforcedConcreteLayerMembraneSection01:
+		return new ReinforcedConcreteLayerMembraneSection01();
+
+	case SEC_TAG_ReinforcedConcreteLayerMembraneSection02:
+		return new ReinforcedConcreteLayerMembraneSection02();
+
 	default:
 	     opserr << "FEM_ObjectBrokerAllClasses::getNewSection - ";
 	     opserr << " - no section type exists for class tag ";
@@ -1867,6 +1877,12 @@ FEM_ObjectBrokerAllClasses::getNewNDMaterial(int classTag)
 
   case ND_TAG_ASDConcrete3DMaterial:
       return new ASDConcrete3DMaterial();
+
+  case ND_TAG_OrthotropicRotatingAngleConcreteT2DMaterial01:
+	  return new OrthotropicRotatingAngleConcreteT2DMaterial01();
+
+  case ND_TAG_SmearedSteelDoubleLayerT2DMaterial01:
+	  return new SmearedSteelDoubleLayerT2DMaterial01();
     
   default:
     opserr << "FEM_ObjectBrokerAllClasses::getNewNDMaterial - ";

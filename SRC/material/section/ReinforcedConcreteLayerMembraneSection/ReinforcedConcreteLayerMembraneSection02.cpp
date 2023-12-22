@@ -199,7 +199,8 @@ const Vector& ReinforcedConcreteLayerMembraneSection02::getCommittedStress(void)
 double ReinforcedConcreteLayerMembraneSection02::getRho(void)
 {
 	double rhoH = 0.0;
-	rhoH = TheRCMaterial->getRho();
+
+	rhoH = (TheRCMaterial->getRho()) * t;
 
 	return rhoH;
 }
@@ -335,14 +336,93 @@ int ReinforcedConcreteLayerMembraneSection02::revertToStart(void)
 
 int ReinforcedConcreteLayerMembraneSection02::sendSelf(int commitTag, Channel& theChannel)
 {
-	// Pendiente
-	return -1;
+	int res = 0;
+	int dataTag = this->getDbTag();
+
+	static Vector data(2);
+	data(0) = this->getTag();
+	data(1) = t;
+
+	res += theChannel.sendVector(dataTag, commitTag, data);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection02::sendself() - " << this->getTag() << " failed to send Vector\n";
+		return res;
+	}
+
+	int matDbTag;
+	static ID idData(2);
+	idData(0) = TheRCMaterial->getClassTag();
+	matDbTag = TheRCMaterial->getDbTag();
+	if (matDbTag == 0) {
+		matDbTag = theChannel.getDbTag();
+		if (matDbTag != 0)
+			TheRCMaterial->setDbTag(matDbTag);
+	}
+	idData(1) = matDbTag;
+
+	res += theChannel.sendID(dataTag, commitTag, idData);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection02::sendself() - " << this->getTag() << " failed to send ID\n";
+		return res;
+	}
+
+	res += TheRCMaterial->sendSelf(commitTag, theChannel);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection02::sendself() - " << this->getTag() << " failed to send its Material\n";
+		return res;
+	}
+
+	return res;
 }
 
 int ReinforcedConcreteLayerMembraneSection02::recvSelf(int commitTag, Channel& theChannel, FEM_ObjectBroker& theBroker)
 {
-	// Pendiente
-	return -1;
+	int res = 0;
+
+	int dataTag = this->getDbTag();
+
+	static Vector data(2);
+	res += theChannel.recvVector(dataTag, commitTag, data);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection02::recvSelf() - failed to receive Vector\n";
+		return res;
+	}
+	this->setTag((int)data(0));
+	t = data(1);
+
+	static ID idData(2);
+
+	res += theChannel.recvID(dataTag, commitTag, idData);
+	if (res < 0) {
+		opserr << "WARNING ReinforcedConcreteLayerMembraneSection02::recvSelf() - "<<this->getTag()<<" failed to receive ID\n";
+		return res;
+	}
+
+	int matClassTag = idData(0);
+	if (TheRCMaterial != 0) {
+		if (matClassTag != TheRCMaterial->getClassTag()) {
+			delete TheRCMaterial;
+			TheRCMaterial = 0;
+		}
+	}
+
+	if (TheRCMaterial == 0) {
+		TheRCMaterial = theBroker.getNewNDMaterial(matClassTag);
+		if (TheRCMaterial == 0) {
+			opserr << "ReinforcedConcreteLayerMembraneSection02::recvSelf() - failed to get a NDMaterial of type " << matClassTag << endln;
+			return -1;
+		}
+	}
+
+	TheRCMaterial->setDbTag(idData(1));
+
+	res += TheRCMaterial->recvSelf(commitTag, theChannel, theBroker);
+	if (res < 0) {
+		opserr << "ReinforcedConcreteLayerMembraneSection02::recvSelf() - the material failed in recvSelf()\n";
+		return res;
+	}
+
+	return res;
 }
 
 void ReinforcedConcreteLayerMembraneSection02::Print(OPS_Stream& s, int flag)
