@@ -4,7 +4,7 @@
 // Created: 03/2023
 // 
 // Description: This file contains the class definition for SmearedSteelDoubleLayerT2DMaterial01. 
-// A SmearedSteelDoubleLayerT2DMaterial01 provides the abstraction is a subclass of the class NDMaterial and corresponds to the abstract representation
+// A SmearedSteelDoubleLayerT2DMaterial01 is a subclass of the class NDMaterial and corresponds to the abstract representation
 // of a double perpendicular Smeared Steel layers (plane stress) 2D Material with a tangent formulation, and use a uniaxial material in each direction
 // that is used in Finite Element Method or Structural Analysis.
 //
@@ -216,7 +216,15 @@ NDMaterial* SmearedSteelDoubleLayerT2DMaterial01::getCopy(const char* type)
 // Print
 void SmearedSteelDoubleLayerT2DMaterial01::Print(OPS_Stream& s, int flag)
 {
-	return;
+	s << "\n SmearedSteelDoubleLayerT2DMaterial01, nDMaterial tag: " << this->getTag() << endln;
+
+	// Input values
+	s << "Orientation of the smeared steel layers: " << thetaSmearedSteel << endln;
+	s << "Reinforcing ratio of the smeared steel layer 1: " << ratioLayer1 << endln;
+	s << "Reinforcing ratio of the smeared steel layer 2: " << ratioLayer2 << endln;
+
+	s << "Strain:" << endln;
+	s << "EpsX = " << Tstrain(0) << ", EpsY = " << Tstrain(1) << ", GammaXY = " << Tstrain(2) << endln;
 }
 
 int SmearedSteelDoubleLayerT2DMaterial01::sendSelf(int commitTag, Channel& theChannel)

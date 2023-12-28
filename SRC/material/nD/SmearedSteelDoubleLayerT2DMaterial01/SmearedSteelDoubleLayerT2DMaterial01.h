@@ -86,26 +86,26 @@ class SmearedSteelDoubleLayerT2DMaterial01 : public NDMaterial
 
 	  UniaxialMaterial** theMaterial;		// pointer to a material
 
-	  double ratioLayer1;
-	  double ratioLayer2;
-	  double thetaSmearedSteel;
+	  double ratioLayer1;					// store the reinforcing ratio of the smeared steel layer 1
+	  double ratioLayer2;					// store the reinforcing ratio of the smeared steel layer 1
+	  double thetaSmearedSteel;				// store the orientation of the smeared steel layers
 	  // Material history variables..............................................................................
-	  double thetaPrincipalDirection;
-	  Vector strainPrincipalDirection;	
+	  double thetaPrincipalDirection;	    // store the orientation of the principal direction in the material
+	  Vector strainPrincipalDirection;	    // store the principal strains
 	  // Committed state variables...............................................................................
 	  Vector CstrainLayer;					// store the Committed Strain for the Layer
 	  Vector Cstrain;						// store the Committed Strain
 	  Vector Cstress;						// store the Committed Stress
 	  Vector Ctangent;						// store the Committed Tangent 
 	  // Trial state variables...................................................................................
-	  Vector stressNDM;				// store the Trial Stress
-	  Matrix tangentNDM;			// store the Trial Tangent
+	  Vector stressNDM;				        // store the Trial Stress
+	  Matrix tangentNDM;			        // store the Trial Tangent
 	  Matrix initialTangentNDM;		
 
-	  Vector TstrainLayer;			// store the Trial Strain for the Layer
-	  Vector Tstrain;				// store the Trial Strain
-	  Vector Tstress;				// store the Trial Stress
-	  Vector Ttangent;				// store the Trial Tangent
+	  Vector TstrainLayer;			        // store the Trial Strain for the Layer
+	  Vector Tstrain;				        // store the Trial Strain
+	  Vector Tstress;				        // store the Trial Stress
+	  Vector Ttangent;				        // store the Trial Tangent
 
 	  const double pi;
 };
