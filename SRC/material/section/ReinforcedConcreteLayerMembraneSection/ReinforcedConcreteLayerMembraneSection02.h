@@ -34,7 +34,7 @@ public:
 
 	ReinforcedConcreteLayerMembraneSection02(int tag,			// section tag
 		NDMaterial* RCMaterialObject,							// reinforced concrete nDMaterial tag
-		double Thickness);										// macro-fiber thickness
+		double Thickness);										// section thickness
 
 	ReinforcedConcreteLayerMembraneSection02();
 

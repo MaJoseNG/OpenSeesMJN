@@ -4,9 +4,9 @@
 // Created: 03/2023
 // 
 // Description: This file contains the class definition for SmearedSteelDoubleLayerT2DMaterial01. 
-// A SmearedSteelDoubleLayerT2DMaterial01 provides the abstraction is a subclass of the class NDMaterial and corresponds to the abstract representation
-// of a double perpendicular Smeared Steel layers (plane stress) 2D Material with a tangent formulation, and use a uniaxial material in each direction
-// that is used in Finite Element Method or Structural Analysis.
+// A SmearedSteelDoubleLayerT2DMaterial01 is a subclass of the class NDMaterial and corresponds to the abstract representation
+// of a double perpendicular Smeared Steel layers (plane stress) 2D Material with a tangent formulation. Each layer works only 
+// in the direction of the bars, so a uniaxial constitutive model is used to represent the behavior of reinforcing steel bars in each direction.
 //
 // Reference:
 // 1. Rojas, F., Anderson, J. C., Massones, L. M. (2016). A nonlinear quadrilateral layered membrane with drilling degrees of freedom for 

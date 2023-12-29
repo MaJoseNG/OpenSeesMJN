@@ -900,7 +900,6 @@ Vector ReinforcedConcreteLayerMembraneSection01::getBendingParameters(void)
 	return input_par;
 }
 
-// WARNING: The following method should be tested!
 void ReinforcedConcreteLayerMembraneSection01::setCrackPattern(void)
 {
 	// Calculate the Principal Direction of Strain
@@ -1019,10 +1018,6 @@ void ReinforcedConcreteLayerMembraneSection01::calculateAngle01(double cosTheta,
 void ReinforcedConcreteLayerMembraneSection01::calculatePoissonRatios(double e1, double e2)
 {
 	double nu[2];
-
-	/*if (e1 <= ec || e1 >= ecr || e2 <= ec || e2 >= ecr) {
-		isConcreteCracked = true;
-	}*/
 
 	double Nuo = 0.2;
 

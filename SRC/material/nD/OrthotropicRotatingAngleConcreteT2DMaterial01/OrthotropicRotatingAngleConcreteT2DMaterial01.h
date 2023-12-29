@@ -83,7 +83,7 @@ private:
 	void calculateStressTransformationMatrix(double* pTmatrixStress, double theta);			// calculate the Stress Transformation Matrix that goes from the orientation of the Principal Direction T(-thetaPD) to the Local Coord System
 
 	// Function added for MEFI3D
-	Vector getEc(void);		// return input parameters
+	Vector getEc(void);		                // return input parameters
 
 	// Pointers to material arrays
 	UniaxialMaterial** theMaterial;         // pointer of the materials
